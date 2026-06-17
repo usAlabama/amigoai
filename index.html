@@ -1813,35 +1813,42 @@ const I18N = {
     }
 };
 
-// ===== DEFAULT MODELS =====
+// ===== DEFAULT MODELS (UPDATED 2026 + VENICE) =====
 const DEFAULT_MODELS = [
+    // 🚀 OpenRouter Heavyweights (Free Tier 2026)
+    { id: 'openrouter:qwen/qwen3-coder-480b-a35b:free', name: 'Qwen3 Coder 480B (1M ctx) · OR', provider: 'openrouter', free: true, speed: 'medium', reasoning: true },
+    { id: 'openrouter:nousresearch/hermes-3-405b:free', name: 'Hermes 3 405B · OR', provider: 'openrouter', free: true, speed: 'slow', reasoning: false },
+    { id: 'openrouter:qwen/qwen3-next-80b-a3b:free', name: 'Qwen3 Next 80B MoE · OR', provider: 'openrouter', free: true, speed: 'fast', reasoning: false },
+    { id: 'openrouter:google/gemma-4-26b-a4b:free', name: 'Gemma 4 26B (Vision) · OR', provider: 'openrouter', free: true, speed: 'fast', reasoning: true },
+    { id: 'openrouter:venice-ai/venice-uncensored:free', name: 'Venice Uncensored (Mistral 24B) · OR', provider: 'openrouter', free: true, speed: 'fast', reasoning: false },
+    
+    // 🛡️ OpenRouter Reliable Classics
+    { id: 'openrouter:meta-llama/llama-3.3-70b-instruct:free', name: 'Llama 3.3 70B · OR', provider: 'openrouter', free: true, speed: 'fast', reasoning: false },
+    { id: 'openrouter:deepseek/deepseek-r1:free', name: 'DeepSeek R1 · OR', provider: 'openrouter', free: true, speed: 'medium', reasoning: true },
+    { id: 'openrouter:deepseek/deepseek-chat:free', name: 'DeepSeek V3 · OR', provider: 'openrouter', free: true, speed: 'fast', reasoning: false },
+    { id: 'openrouter:qwen/qwq-32b:free', name: 'QwQ 32B (Reasoning) · OR', provider: 'openrouter', free: true, speed: 'medium', reasoning: true },
+    
+    // ⚡ Groq (Speed demons)
     { id: 'groq:llama-3.3-70b-versatile', name: 'Llama 3.3 70B · Groq', provider: 'groq', free: true, speed: 'fast', reasoning: false },
-    { id: 'groq:llama-3.1-8b-instant', name: 'Llama 3.1 8B · Groq', provider: 'groq', free: true, speed: 'instant', reasoning: false },
     { id: 'groq:deepseek-r1-distill-llama-70b', name: 'DeepSeek R1 70B · Groq', provider: 'groq', free: true, speed: 'fast', reasoning: true },
-    { id: 'groq:mistral-saba-24b', name: 'Mistral Saba 24B · Groq', provider: 'groq', free: true, speed: 'fast', reasoning: false },
+    
+    // 🧠 Cerebras & Cloudflare (Backups)
     { id: 'cerebras:llama-3.3-70b', name: 'Llama 3.3 70B · Cerebras', provider: 'cerebras', free: true, speed: 'fast', reasoning: false },
-    { id: 'cerebras:llama3.1-8b', name: 'Llama 3.1 8B · Cerebras', provider: 'cerebras', free: true, speed: 'instant', reasoning: false },
-    { id: 'openrouter:google/gemini-2.0-flash-exp:free', name: 'Gemini 2.0 Flash · OpenRouter', provider: 'openrouter', free: true, speed: 'fast', reasoning: false },
-    { id: 'openrouter:deepseek/deepseek-chat:free', name: 'DeepSeek V3 · OpenRouter', provider: 'openrouter', free: true, speed: 'fast', reasoning: false },
-    { id: 'openrouter:deepseek/deepseek-r1:free', name: 'DeepSeek R1 · OpenRouter', provider: 'openrouter', free: true, speed: 'medium', reasoning: true },
-    { id: 'openrouter:qwen/qwen-2.5-72b-instruct:free', name: 'Qwen 2.5 72B · OpenRouter', provider: 'openrouter', free: true, speed: 'fast', reasoning: false },
-    { id: 'openrouter:qwen/qwq-32b:free', name: 'QwQ 32B · OpenRouter', provider: 'openrouter', free: true, speed: 'medium', reasoning: true },
-    { id: 'openrouter:meta-llama/llama-3.3-70b-instruct:free', name: 'Llama 3.3 70B · OpenRouter', provider: 'openrouter', free: true, speed: 'fast', reasoning: false },
-    { id: 'cf:@cf/meta/llama-3.3-70b-instruct-fp8-fast', name: 'Llama 3.3 70B · Cloudflare', provider: 'cf', free: true, speed: 'fast', reasoning: false },
-    { id: 'cf:@cf/mistralai/mistral-small-3.1-24b-instruct', name: 'Mistral Small 3.1 · Cloudflare', provider: 'cf', free: true, speed: 'fast', reasoning: false }
+    { id: 'cf:@cf/meta/llama-3.3-70b-instruct-fp8-fast', name: 'Llama 3.3 70B · CF', provider: 'cf', free: true, speed: 'fast', reasoning: false }
 ];
 
+// ===== PRESET MODELS (CATALOG UPDATED 2026 + VENICE) =====
 const PRESET_MODELS = [
-    { id: 'groq:llama-3.3-70b-versatile', name: 'Llama 3.3 70B (Groq)', provider: 'groq', desc: 'Самая быстрая 70B, универсальная', reasoning: false },
-    { id: 'groq:deepseek-r1-distill-llama-70b', name: 'DeepSeek R1 70B (Groq)', provider: 'groq', desc: 'Reasoning модель, математика/логика', reasoning: true },
-    { id: 'groq:llama-3.1-8b-instant', name: 'Llama 3.1 8B Instant (Groq)', provider: 'groq', desc: 'Ультра-быстрая, простые задачи', reasoning: false },
-    { id: 'groq:qwen-qwq-32b', name: 'QwQ 32B (Groq)', provider: 'groq', desc: 'Reasoning, сложные задачи', reasoning: true },
-    { id: 'cerebras:llama-3.3-70b', name: 'Llama 3.3 70B (Cerebras)', provider: 'cerebras', desc: 'Альтернатива Groq, стабильная', reasoning: false },
-    { id: 'openrouter:deepseek/deepseek-r1:free', name: 'DeepSeek R1 (OpenRouter)', provider: 'openrouter', desc: 'Reasoning, бесплатная', reasoning: true },
-    { id: 'openrouter:qwen/qwq-32b:free', name: 'QwQ 32B (OpenRouter)', provider: 'openrouter', desc: 'Reasoning Qwen, бесплатно', reasoning: true },
-    { id: 'openrouter:google/gemini-2.0-flash-exp:free', name: 'Gemini 2.0 Flash (OpenRouter)', provider: 'openrouter', desc: 'Быстрая Google модель', reasoning: false },
-    { id: 'openrouter:meta-llama/llama-3.3-70b-instruct:free', name: 'Llama 3.3 70B (OpenRouter)', provider: 'openrouter', desc: 'Универсальная, бесплатная', reasoning: false },
-    { id: 'cf:@cf/meta/llama-3.3-70b-instruct-fp8-fast', name: 'Llama 3.3 70B (Cloudflare)', provider: 'cf', desc: 'Через CF Workers AI', reasoning: false }
+    { id: 'openrouter:qwen/qwen3-coder-480b-a35b:free', name: 'Qwen3 Coder 480B (MoE)', provider: 'openrouter', desc: '🔥 1M контекст! Идеально для анализа целых репозиториев и сложного кода', reasoning: true },
+    { id: 'openrouter:nousresearch/hermes-3-405b:free', name: 'Hermes 3 405B', provider: 'openrouter', desc: 'Флагманский интеллект 405B. Глубокий анализ, креатив и сложная логика', reasoning: false },
+    { id: 'openrouter:qwen/qwen3-next-80b-a3b:free', name: 'Qwen3 Next 80B', provider: 'openrouter', desc: 'Мощная MoE модель (262K ctx). Быстрые и четкие ответы без "воды"', reasoning: false },
+    { id: 'openrouter:google/gemma-4-26b-a4b:free', name: 'Gemma 4 26B (Vision/Video)', provider: 'openrouter', desc: '👁️ Мультимодальная: читает картинки, графики и понимает видео до 60с', reasoning: true },
+    { id: 'openrouter:venice-ai/venice-uncensored:free', name: 'Venice Uncensored (Mistral 24B)', provider: 'openrouter', desc: '⚠️ Без цензуры. Модель без ограничений и safety-фильтров', reasoning: false },
+    { id: 'openrouter:deepseek/deepseek-r1:free', name: 'DeepSeek R1', provider: 'openrouter', desc: 'Классический Reasoning. Математика, логика и пошаговые решения', reasoning: true },
+    { id: 'openrouter:meta-llama/llama-3.3-70b-instruct:free', name: 'Llama 3.3 70B', provider: 'openrouter', desc: 'Надежная универсальная рабочая лошадка на каждый день', reasoning: false },
+    { id: 'groq:llama-3.3-70b-versatile', name: 'Llama 3.3 70B (Groq)', provider: 'groq', desc: '⚡ Максимальная скорость генерации для простых задач и чата', reasoning: false },
+    { id: 'groq:deepseek-r1-distill-llama-70b', name: 'DeepSeek R1 70B (Groq)', provider: 'groq', desc: 'Reasoning-модель на стероидах скорости от Groq', reasoning: true },
+    { id: 'cf:@cf/meta/llama-3.3-70b-instruct-fp8-fast', name: 'Llama 3.3 70B (Cloudflare)', provider: 'cf', desc: '🛡️ Стабильный бэкап через инфраструктуру Cloudflare', reasoning: false }
 ];
 
 const ASSISTANTS = [
