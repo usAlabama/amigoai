@@ -1568,28 +1568,22 @@ to { transform: rotate(360deg); }
 <select class="select-input" id="modelSelect"></select>
 </div>
 
-<div class="drawer-section">
-<label>🎨 Провайдер картинок</label>
-<select class="select-input" id="imageProviderSelect">
-<option value="pollinations">Pollinations.ai (Безлимит) 🌐</option>
-</select>
-</div>
-<div class="drawer-section">
-<label>🎨 Модель генерации</label>
-<select class="select-input" id="imageModelSelect">
-<option value="flux">Flux (Высокое качество) ✨</option>
-<option value="turbo">Turbo (Быстрая генерация) ⚡</option>
-</select>
-</div>
 
 <div class="drawer-section">
-<label>🎨 Провайдер картинок</label>
-<select class="select-input" id="imageProviderSelect">
-<option value="pollinations">Pollinations.ai (Flux/Turbo) 🌐</option>
-<option value="cf-sdxl">Cloudflare SDXL (Качество) ☁️</option>
-<option value="cf-flux">Cloudflare Flux (Скорость) ⚡</option>
-</select>
-</div>
+ <label>🎨 Провайдер картинок</label>
+ <select class="select-input" id="imageProviderSelect">
+ <option value="pollinations">Pollinations.ai (Flux/Turbo) 🌐</option>
+ <option value="cf-sdxl">Cloudflare SDXL (Качество) ☁️</option>
+ <option value="cf-flux">Cloudflare Flux (Скорость) ⚡</option>
+ </select>
+ </div>
+ <div class="drawer-section">
+ <label>🎨 Модель генерации</label>
+ <select class="select-input" id="imageModelSelect">
+ <option value="flux">Flux (Высокое качество) ✨</option>
+ <option value="turbo">Turbo (Быстрая генерация) ⚡</option>
+ </select>
+ </div>
 
 <div class="drawer-section">
 <div class="reasoning-toggle-row">
@@ -1900,7 +1894,7 @@ const PRESET_MODELS = [
     { id: 'openrouter:meta-llama/llama-3.3-70b-instruct:free', name: 'Llama 3.3 70B', provider: 'openrouter', desc: 'Надежная универсальная рабочая лошадка на каждый день', reasoning: false },
     { id: 'groq:llama-3.3-70b-versatile', name: 'Llama 3.3 70B (Groq)', provider: 'groq', desc: '⚡ Максимальная скорость генерации для простых задач и чата', reasoning: false },
     { id: 'groq:deepseek-r1-distill-llama-70b', name: 'DeepSeek R1 70B (Groq)', provider: 'groq', desc: 'Reasoning-модель на стероидах скорости от Groq', reasoning: true },
-    { id: 'cf:@cf/meta/llama-3.3-70b-instruct-fp8-fast', name: 'Llama 3.3 70B (Cloudflare)', provider: 'cf', desc: '🛡️ Стабильный бэкап через инфраструктуру Cloudflare', reasoning: false }
+    { id: 'cf:@cf/meta/llama-3.3-70b-instruct-fp8-fast', name: 'Llama 3.3 70B (Cloudflare)', provider: 'cf', desc: '🛡️ Стабильный бэкап через инфраструктуру Cloudflare', reasoning: false },
     { id: 'openrouter:google/gemma-3-27b-it:free', name: 'Gemma 3 27B (Vision) · OR', provider: 'openrouter', desc: 'Надежная универсальная рабочая лошадка на каждый день', reasoning: false },
 ];
 
@@ -3116,39 +3110,15 @@ try { const error = await response.json(); errMsg = error.error || errMsg; } cat
 throw new Error(errMsg);
 }
 
-const contentType = response.headers.get('content-type');
+const contentType = response.headers.get('content-type') || '';
 let imageUrl;
 let providerName = State.settings.imageProvider || 'pollinations';
 
-if (contentType && contentType.includes('application/json')) {
+if (contentType.includes('application/json')) {
     const data = await response.json();
     imageUrl = data.imageUrl;
     providerName = data.provider || 'pollinations.ai';
-    } else {
-        // 🔥 Двойная обработка: Binary Proxy (v1.3.1) или JSON URL (v1.2.0 fallback)
-        const contentType = response.headers.get('content-type') || '';
-        
-        if (contentType.startsWith('image/')) {
-            // Worker v1.3.1: возвращает бинарный поток
-            const blob = await response.blob();
-            imageUrl = URL.createObjectURL(blob);
-            providerName = response.headers.get('X-Provider') || 'Binary Proxy';
-        } else {
-            // Worker v1.2.0 fallback: возвращает JSON с URL
-            try {
-                const text = await response.text();
-                const data = JSON.parse(text);
-                imageUrl = data.imageUrl || data.url;
-                providerName = data.provider || 'pollinations.ai';
-                
-                if (!imageUrl) {
-                    throw new Error('No imageUrl in response');
-                }
-            } catch {
-                throw new Error('Invalid response format from Worker');
-            }
-        }
-    }
+}
 
 // Update message with image (XSS-safe)
 assistantMsg.content = `🎨 Вот твоя картинка: ${prompt}`;
