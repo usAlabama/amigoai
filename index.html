@@ -2833,9 +2833,16 @@ signal: controller.signal
 });
 
 if (!response.ok) {
-let msg = 'HTTP ' + response.status;
-try { const e = await response.json(); msg = e.error || e.message || msg; } catch {}
-throw new Error(msg);
+    let msg = 'HTTP ' + response.status;
+    let details = '';
+    try { 
+        const e = await response.json(); 
+        msg = e.error || e.message || msg;
+        // Вытаскиваем детали от провайдера
+        if (e.details) details = '\n📋 ' + String(e.details).slice(0, 200);
+        if (e.provider_url) details += '\n🔗 ' + e.provider_url;
+    } catch {}
+    throw new Error(msg + details);
 }
 
 if (State.settings.streaming === 'on' && response.body) {
@@ -3659,6 +3666,7 @@ if (imgProvSel) {
         State.settings.imageProvider = e.target.value;
         DB.saveSettings();
         showToast('🎨 Провайдер: ' + e.target.options[e.target.selectedIndex].text, 'success');
+        haptic('light');
     };
 }
 const imgModelSel = document.getElementById('imageModelSelect');
@@ -3668,17 +3676,6 @@ if (imgModelSel) {
         State.settings.imageModel = e.target.value;
         DB.saveSettings();
         showToast('🎨 Модель: ' + e.target.options[e.target.selectedIndex].text, 'success');
-    };
-}
-
-// Image Provider Binding
-const imgProvSel = document.getElementById('imageProviderSelect');
-if (imgProvSel) {
-    imgProvSel.value = State.settings.imageProvider || 'pollinations';
-    imgProvSel.onchange = (e) => {
-        State.settings.imageProvider = e.target.value;
-        DB.saveSettings();
-        showToast('🎨 Провайдер: ' + e.target.options[e.target.selectedIndex].text, 'success');
         haptic('light');
     };
 }
