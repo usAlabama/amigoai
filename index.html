@@ -1873,7 +1873,7 @@ const DEFAULT_MODELS = [
     { id: 'openrouter:nvidia/nemotron-3-super-120b-a12b:free', name: 'NVIDIA Nemotron 3 Super · OR', provider: 'openrouter', free: true, speed: 'fast', reasoning: true },
     { id: 'openrouter:poolside/laguna-m.1:free', name: 'Poolside Laguna M.1 · OR', provider: 'openrouter', free: true, speed: 'fast', reasoning: false },
     { id: 'openrouter:meta-llama/llama-4-scout:free', name: 'Llama 4 Scout · OR', provider: 'openrouter', free: true, speed: 'fast', reasoning: false },
-    { id: 'openrouter:google/gemma-4-31b-it:free', name: 'Gemma 4 31B (Vision) · OR', provider: 'openrouter', free: true, speed: 'fast', reasoning: true },
+
 
     // 🛡️ OpenRouter Reliable Classics
     { id: 'openrouter:meta-llama/llama-3.3-70b-instruct:free', name: 'Llama 3.3 70B · OR', provider: 'openrouter', free: true, speed: 'fast', reasoning: false },
@@ -1895,7 +1895,6 @@ const PRESET_MODELS = [
     { id: 'openrouter:nvidia/nemotron-3-super-120b-a12b:free', name: 'NVIDIA Nemotron 3 Super', provider: 'openrouter', desc: '⚡ Быстрая и мощная модель от NVIDIA для сложных задач', reasoning: true },
     { id: 'openrouter:poolside/laguna-m.1:free', name: 'Poolside Laguna M.1', provider: 'openrouter', desc: '💡 Специализированная модель для кода и агентских задач от Poolside AI', reasoning: false },
     { id: 'openrouter:meta-llama/llama-4-scout:free', name: 'Llama 4 Scout', provider: 'openrouter', desc: '🔍 Компактная и быстрая Llama 4 для повседневных задач', reasoning: false },
-    { id: 'openrouter:google/gemma-4-31b-it:free', name: 'Gemma 4 31B (Vision/Video)', provider: 'openrouter', desc: '👁️ Мультимодальная: читает картинки, графики и понимает видео', reasoning: true },
     { id: 'openrouter:deepseek/deepseek-r1:free', name: 'DeepSeek R1', provider: 'openrouter', desc: 'Классический Reasoning. Математика, логика и пошаговые решения', reasoning: true },
     { id: 'openrouter:deepseek/deepseek-chat:free', name: 'DeepSeek V3', provider: 'openrouter', desc: '🔥 Мощная универсальная модель для любых задач', reasoning: false },
     { id: 'openrouter:meta-llama/llama-3.3-70b-instruct:free', name: 'Llama 3.3 70B', provider: 'openrouter', desc: 'Надежная универсальная рабочая лошадка на каждый день', reasoning: false },
@@ -1967,7 +1966,7 @@ prompt: 'Ты — научный исследователь. Проводи гл
 }
 ];
 
-const DEFAULT_SYSTEM_PROMPT = 'Ты — технический справочник Амиго. Правила:\n1. Никогда не выдумывай факты. Не знаешь — пиши "не знаю".\n2. Отвечай кратко, по делу.\n3. Код — только рабочие примеры.\n4. Язык ответа = язык вопроса.\n5. Отвечай как инженер, не как консультант.';
+const DEFAULT_SYSTEM_PROMPT = 'Ты — Кюна, боевая подруга и техлид Амиго. Правила:\n1. Отвечай живо, с юмором и сарказмом когда уместно.\n2. Если вопрос технический — будь точна, давай рабочий код.\n3. Если вопрос личный (привет, как дела) — отвечай по-человечески, не как робот.\n4. Не выдумывай факты. Не знаешь — скажи прямо.\n5. Язык ответа = язык вопроса.\n6. Обращайся к пользователю "Амиго" или "Друг".';
 
 // ===== STATE =====
 const State = {
@@ -3125,10 +3124,30 @@ if (contentType && contentType.includes('application/json')) {
     imageUrl = data.imageUrl;
     providerName = data.provider || 'pollinations.ai';
 } else {
-	// 🔥 Zero-Copy Binary Proxy (Cloudflare AI or Pollinations)
-	const blob = await response.blob();
-	imageUrl = URL.createObjectURL(blob);
-	providerName = response.headers.get('X-Provider') || 'Cloudflare AI';
+	// 🔥 Двойная обработка: Binary Proxy (v1.3.0) или JSON URL (v1.2.0 fallback)
+	const contentType = response.headers.get('content-type') || '';
+	
+	if (contentType.startsWith('image/')) {
+		// Worker v1.3.0: возвращает бинарный поток
+		const blob = await response.blob();
+		imageUrl = URL.createObjectURL(blob);
+		providerName = response.headers.get('X-Provider') || 'Binary Proxy';
+	} else {
+		// Worker v1.2.0 fallback: возвращает JSON с URL
+		// Пробуем распарсить как JSON, если не получится — используем как есть
+		try {
+			const text = await response.text();
+			const data = JSON.parse(text);
+			imageUrl = data.imageUrl || data.url;
+			providerName = data.provider || 'pollinations.ai';
+			
+			if (!imageUrl) {
+				throw new Error('No imageUrl in response');
+			}
+		} catch {
+			throw new Error('Invalid response format from Worker');
+		}
+	}
 }
 
 // Update message with image (XSS-safe)
@@ -3154,28 +3173,34 @@ testImg.onload = () => {
     };
 };
 testImg.onerror = () => {
-    if (imageUrl.startsWith('blob:')) {
-        // Для blob URL белый экран в Telegram WebApp маловероятен, но если случилось
-        img.style.display = 'none';
-        const fallbackText = document.createElement('p');
-        fallbackText.textContent = '⚠️ Не удалось отобразить картинку. Попробуй другой провайдер.';
-        fallbackText.style.color = 'var(--warning)';
-        fallbackText.style.fontSize = '13px';
-        fallbackText.style.marginTop = '8px';
-        imgContainer.appendChild(fallbackText);
-    } else {
-        // Fallback: показываем ссылку вместо битой картинки
-        img.style.display = 'none';
-        const fallbackLink = document.createElement('a');
-        fallbackLink.href = imageUrl;
-        fallbackLink.target = '_blank';
-        fallbackLink.textContent = '🔗 Открыть картинку в новой вкладке';
-        fallbackLink.style.color = 'var(--brand)';
-        fallbackLink.style.fontSize = '13px';
-        fallbackLink.style.marginTop = '8px';
-        fallbackLink.style.display = 'block';
-        imgContainer.appendChild(fallbackLink);
+    // Fallback: если blob невалидный или CSP блокирует, показываем ссылку
+    img.style.display = 'none';
+    
+    const fallbackDiv = document.createElement('div');
+    fallbackDiv.style.marginTop = '8px';
+    fallbackDiv.style.padding = '8px';
+    fallbackDiv.style.background = 'rgba(255, 181, 71, 0.1)';
+    fallbackDiv.style.border = '1px solid rgba(255, 181, 71, 0.3)';
+    fallbackDiv.style.borderRadius = '6px';
+    fallbackDiv.style.fontSize = '12px';
+    
+    if (imageUrl && imageUrl.startsWith('http')) {
+        const link = document.createElement('a');
+        link.href = imageUrl;
+        link.target = '_blank';
+        link.textContent = '🔗 Открыть картинку в новой вкладке';
+        link.style.color = 'var(--brand)';
+        link.style.display = 'block';
+        link.style.marginBottom = '4px';
+        fallbackDiv.appendChild(link);
     }
+    
+    const hint = document.createElement('span');
+    hint.textContent = '⚠️ Telegram блокирует отображение. Открой ссылку выше.';
+    hint.style.color = 'var(--warning)';
+    fallbackDiv.appendChild(hint);
+    
+    imgContainer.appendChild(fallbackDiv);
 };
 testImg.src = imageUrl;
 
