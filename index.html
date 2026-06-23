@@ -1865,23 +1865,21 @@ generationStopped: 'Generation stopped'
 // ===== DEFAULT MODELS (UPDATED 2026 + VENICE) =====
 
 const DEFAULT_MODELS = [
-// 🌐 OpenRouter Smart Router (Fallback)
+// 🌐 OpenRouter Smart Router (Recommended)
 { id: 'openrouter:openrouter/free', name: 'Free Models Router 🌐 · OR', provider: 'openrouter', free: true, speed: 'fast', reasoning: false },
 
-// 🔥 OpenRouter Heavyweights (Updated June 2026)
-{ id: 'openrouter:qwen/qwen3-coder:free', name: 'Qwen3 Coder 480B (1M ctx) · OR', provider: 'openrouter', free: true, speed: 'medium', reasoning: true },
-{ id: 'openrouter:nousresearch/hermes-3-405b:free', name: 'Hermes 3 405B · OR', provider: 'openrouter', free: true, speed: 'slow', reasoning: false },
+// 🔥 OpenRouter Top Free Models (June 2026)
 { id: 'openrouter:nvidia/nemotron-3-ultra:free', name: 'NVIDIA Nemotron 3 Ultra · OR', provider: 'openrouter', free: true, speed: 'fast', reasoning: true },
-{ id: 'openrouter:poolside/lantern-m1:free', name: 'Poolside Lantern M.1 · OR', provider: 'openrouter', free: true, speed: 'fast', reasoning: false },
 { id: 'openrouter:nvidia/nemotron-3-super:free', name: 'NVIDIA Nemotron 3 Super · OR', provider: 'openrouter', free: true, speed: 'fast', reasoning: true },
+{ id: 'openrouter:poolside/lantern-m1:free', name: 'Poolside Lantern M.1 · OR', provider: 'openrouter', free: true, speed: 'fast', reasoning: false },
 { id: 'openrouter:meta-llama/llama-4-maverick:free', name: 'Llama 4 Maverick · OR', provider: 'openrouter', free: true, speed: 'fast', reasoning: false },
 { id: 'openrouter:meta-llama/llama-4-scout:free', name: 'Llama 4 Scout · OR', provider: 'openrouter', free: true, speed: 'fast', reasoning: false },
+{ id: 'openrouter:google/gemma-4-26b-a4b:free', name: 'Gemma 4 26B (Vision) · OR', provider: 'openrouter', free: true, speed: 'fast', reasoning: true },
 
 // 🛡️ OpenRouter Reliable Classics
 { id: 'openrouter:meta-llama/llama-3.3-70b-instruct:free', name: 'Llama 3.3 70B · OR', provider: 'openrouter', free: true, speed: 'fast', reasoning: false },
 { id: 'openrouter:deepseek/deepseek-r1:free', name: 'DeepSeek R1 · OR', provider: 'openrouter', free: true, speed: 'medium', reasoning: true },
 { id: 'openrouter:deepseek/deepseek-chat:free', name: 'DeepSeek V3 · OR', provider: 'openrouter', free: true, speed: 'fast', reasoning: false },
-{ id: 'openrouter:qwen/qwq-32b:free', name: 'QwQ 32B (Reasoning) · OR', provider: 'openrouter', free: true, speed: 'medium', reasoning: true },
 
 // ⚡ Groq (Speed demons)
 { id: 'groq:llama-3.3-70b-versatile', name: 'Llama 3.3 70B · Groq', provider: 'groq', free: true, speed: 'fast', reasoning: false },
@@ -1893,14 +1891,13 @@ const DEFAULT_MODELS = [
 ];
 
 const PRESET_MODELS = [
-{ id: 'openrouter:openrouter/free', name: 'Free Models Router 🌐', provider: 'openrouter', desc: '🤖 Умный роутер: сам выбирает лучшую бесплатную модель под твой запрос (Vision, Code, Chat)', reasoning: false },
-{ id: 'openrouter:qwen/qwen3-coder:free', name: 'Qwen3 Coder 480B (MoE)', provider: 'openrouter', desc: '🔥 1M контекст! Идеально для анализа целых репозиториев и сложного кода', reasoning: true },
+{ id: 'openrouter:openrouter/free', name: 'Free Models Router 🌐', provider: 'openrouter', desc: '🤖 Умный роутер: сам выбирает лучшую бесплатную модель под твой запрос', reasoning: false },
 { id: 'openrouter:nvidia/nemotron-3-ultra:free', name: 'NVIDIA Nemotron 3 Ultra', provider: 'openrouter', desc: '🚀 Флагман от NVIDIA. Мультимодальный, быстрый, с поддержкой reasoning', reasoning: true },
-{ id: 'openrouter:poolside/lantern-m1:free', name: 'Poolside Lantern M.1', provider: 'openrouter', desc: '💡 Специализированная модель для кода и агентских задач от Poolside AI', reasoning: false },
 { id: 'openrouter:nvidia/nemotron-3-super:free', name: 'NVIDIA Nemotron 3 Super', provider: 'openrouter', desc: '⚡ Быстрая и мощная модель от NVIDIA для сложных задач', reasoning: true },
+{ id: 'openrouter:poolside/lantern-m1:free', name: 'Poolside Lantern M.1', provider: 'openrouter', desc: '💡 Специализированная модель для кода и агентских задач от Poolside AI', reasoning: false },
 { id: 'openrouter:meta-llama/llama-4-maverick:free', name: 'Llama 4 Maverick', provider: 'openrouter', desc: '🎯 Новая генерация Llama. Улучшенный reasoning и мультимодальность', reasoning: false },
 { id: 'openrouter:meta-llama/llama-4-scout:free', name: 'Llama 4 Scout', provider: 'openrouter', desc: '🔍 Компактная и быстрая Llama 4 для повседневных задач', reasoning: false },
-{ id: 'openrouter:nousresearch/hermes-3-405b:free', name: 'Hermes 3 405B', provider: 'openrouter', desc: 'Флагманский интеллект 405B. Глубокий анализ, креатив и сложная логика', reasoning: false },
+{ id: 'openrouter:google/gemma-4-26b-a4b:free', name: 'Gemma 4 26B (Vision/Video)', provider: 'openrouter', desc: '👁️ Мультимодальная: читает картинки, графики и понимает видео до 60с', reasoning: true },
 { id: 'openrouter:deepseek/deepseek-r1:free', name: 'DeepSeek R1', provider: 'openrouter', desc: 'Классический Reasoning. Математика, логика и пошаговые решения', reasoning: true },
 { id: 'openrouter:meta-llama/llama-3.3-70b-instruct:free', name: 'Llama 3.3 70B', provider: 'openrouter', desc: 'Надежная универсальная рабочая лошадка на каждый день', reasoning: false },
 { id: 'groq:llama-3.3-70b-versatile', name: 'Llama 3.3 70B (Groq)', provider: 'groq', desc: '⚡ Максимальная скорость генерации для простых задач и чата', reasoning: false },
@@ -3142,16 +3139,36 @@ const imgContainer = document.createElement('div');
 imgContainer.innerHTML = renderMarkdown(assistantMsg.content);
 
 const img = document.createElement('img');
-img.src = imageUrl;
 img.alt = prompt;
 img.className = 'message-image';
-img.onclick = () => {
-    if (imageUrl.startsWith('blob:')) {
-        showToast('💾 Тапни и удерживай для сохранения в галерею', 'info');
-    } else {
-        window.open(imageUrl, '_blank');
-    }
+
+// 🔥 Правильная загрузка с обработкой ошибок
+const testImg = new Image();
+testImg.onload = () => {
+    img.src = imageUrl;
+    img.onclick = () => {
+        if (imageUrl.startsWith('blob:')) {
+            showToast('💾 Тапни и удерживай для сохранения в галерею', 'info');
+        } else {
+            window.open(imageUrl, '_blank');
+        }
+    };
 };
+testImg.onerror = () => {
+    // Fallback: показываем ссылку вместо битой картинки
+    img.style.display = 'none';
+    const fallbackLink = document.createElement('a');
+    fallbackLink.href = imageUrl;
+    fallbackLink.target = '_blank';
+    fallbackLink.textContent = '🔗 Открыть картинку в новой вкладке';
+    fallbackLink.style.color = 'var(--brand)';
+    fallbackLink.style.fontSize = '13px';
+    fallbackLink.style.marginTop = '8px';
+    fallbackLink.style.display = 'block';
+    imgContainer.appendChild(fallbackLink);
+};
+testImg.src = imageUrl;
+
 imgContainer.appendChild(img);
 
 const meta = document.createElement('p');
