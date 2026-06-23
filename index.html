@@ -1569,6 +1569,15 @@ to { transform: rotate(360deg); }
 </div>
 
 <div class="drawer-section">
+<label>🎨 Провайдер картинок</label>
+<select class="select-input" id="imageProviderSelect">
+<option value="pollinations">Pollinations.ai (Flux/Turbo) 🌐</option>
+<option value="cf-sdxl">Cloudflare SDXL (Качество) ☁️</option>
+<option value="cf-flux">Cloudflare Flux (Скорость) ⚡</option>
+</select>
+</div>
+
+<div class="drawer-section">
 <div class="reasoning-toggle-row">
 <div class="reasoning-toggle-label">
 <span class="icon">💭</span>
@@ -1841,11 +1850,14 @@ generationStopped: 'Generation stopped'
 
 // ===== DEFAULT MODELS (UPDATED 2026 + VENICE) =====
 const DEFAULT_MODELS = [
-// 🚀 OpenRouter Heavyweights (Free Tier 2026)
+// 🌐 OpenRouter Smart & Heavyweights (Free Tier 2026)
+{ id: 'openrouter:openrouter/free', name: 'Free Models Router 🌐 · OR', provider: 'openrouter', free: true, speed: 'fast', reasoning: false },
 { id: 'openrouter:qwen/qwen3-coder-480b-a35b:free', name: 'Qwen3 Coder 480B (1M ctx) · OR', provider: 'openrouter', free: true, speed: 'medium', reasoning: true },
 { id: 'openrouter:nousresearch/hermes-3-405b:free', name: 'Hermes 3 405B · OR', provider: 'openrouter', free: true, speed: 'slow', reasoning: false },
 { id: 'openrouter:qwen/qwen3-next-80b-a3b:free', name: 'Qwen3 Next 80B MoE · OR', provider: 'openrouter', free: true, speed: 'fast', reasoning: false },
 { id: 'openrouter:google/gemma-4-26b-a4b:free', name: 'Gemma 4 26B (Vision) · OR', provider: 'openrouter', free: true, speed: 'fast', reasoning: true },
+{ id: 'openrouter:nvidia/nemotron-nano-12b-vl:free', name: 'Nemotron Nano 12B VL (Vision) · OR', provider: 'openrouter', free: true, speed: 'fast', reasoning: true },
+{ id: 'openrouter:liquidai/lfm2.5-1.2b-thinking:free', name: 'LiquidAI LFM2.5 1.2B (Edge) · OR', provider: 'openrouter', free: true, speed: 'ultra-fast', reasoning: true },
 { id: 'openrouter:venice-ai/venice-uncensored:free', name: 'Venice Uncensored (Mistral 24B) · OR', provider: 'openrouter', free: true, speed: 'fast', reasoning: false },
 
 // 🛡️ OpenRouter Reliable Classics
@@ -1855,7 +1867,7 @@ const DEFAULT_MODELS = [
 { id: 'openrouter:qwen/qwq-32b:free', name: 'QwQ 32B (Reasoning) · OR', provider: 'openrouter', free: true, speed: 'medium', reasoning: true },
 
 // ⚡ Groq (Speed demons)
-{ id: 'groq:llama-3.3-70b-versatile', name: 'Llama 3.3 70B · Groq', provider: 'groq', free: true, speed: 'fast', reasoning: false },
+{ id: 'groq:llama-3.3-70b-versatile', name: 'Llama 3.3 70B · Groq', provider: 'groq', free: true, speed: 'fast', reasoning: false }, 
 { id: 'groq:deepseek-r1-distill-llama-70b', name: 'DeepSeek R1 70B · Groq', provider: 'groq', free: true, speed: 'fast', reasoning: true },
 
 // 🧠 Cerebras & Cloudflare (Backups)
@@ -1863,9 +1875,11 @@ const DEFAULT_MODELS = [
 { id: 'cf:@cf/meta/llama-3.3-70b-instruct-fp8-fast', name: 'Llama 3.3 70B · CF', provider: 'cf', free: true, speed: 'fast', reasoning: false }
 ];
 
-// ===== PRESET MODELS (CATALOG UPDATED 2026 + VENICE) =====
 const PRESET_MODELS = [
+{ id: 'openrouter:openrouter/free', name: 'Free Models Router 🌐', provider: 'openrouter', desc: '🤖 Умный роутер: сам выбирает лучшую бесплатную модель под твой запрос (Vision, Code, Chat)', reasoning: false },
 { id: 'openrouter:qwen/qwen3-coder-480b-a35b:free', name: 'Qwen3 Coder 480B (MoE)', provider: 'openrouter', desc: '🔥 1M контекст! Идеально для анализа целых репозиториев и сложного кода', reasoning: true },
+{ id: 'openrouter:nvidia/nemotron-nano-12b-vl:free', name: 'NVIDIA Nemotron Nano 12B VL', provider: 'openrouter', desc: '👁️ Мультимодальный монстр от NVIDIA. Читает графики, таблицы и понимает видео. Гибрид Transformer-Mamba', reasoning: true },
+{ id: 'openrouter:liquidai/lfm2.5-1.2b-thinking:free', name: 'LiquidAI LFM2.5 1.2B Thinking', provider: 'openrouter', desc: '⚡ Сверхбыстрая edge-модель для агентов и RAG. Думает на лету, жрет мало токенов', reasoning: true },
 { id: 'openrouter:nousresearch/hermes-3-405b:free', name: 'Hermes 3 405B', provider: 'openrouter', desc: 'Флагманский интеллект 405B. Глубокий анализ, креатив и сложная логика', reasoning: false },
 { id: 'openrouter:qwen/qwen3-next-80b-a3b:free', name: 'Qwen3 Next 80B', provider: 'openrouter', desc: 'Мощная MoE модель (262K ctx). Быстрые и четкие ответы без "воды"', reasoning: false },
 { id: 'openrouter:google/gemma-4-26b-a4b:free', name: 'Gemma 4 26B (Vision/Video)', provider: 'openrouter', desc: '👁️ Мультимодальная: читает картинки, графики и понимает видео до 60с', reasoning: true },
@@ -2439,7 +2453,7 @@ State.sessions.forEach(s => { bytes += JSON.stringify(s).length * 2; });
 } catch {}
 const kb = (bytes / 1024).toFixed(1);
 const mb = (bytes / (1024 * 1024)).toFixed(2);
-const pct = Math.min((bytes / (4 * 1024 * 1024)) * 100, 100);
+const pct = Math.min((bytes / (50 * 1024 * 1024)) * 100, 100); // 50MB soft limit
 const bar = document.getElementById('storageBar');
 const used = document.getElementById('storageUsed');
 const count = document.getElementById('storageCount');
@@ -2937,7 +2951,9 @@ if (msgBody) {
 msgBody.innerHTML = '<div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>';
 }
 
-const history = session.messages.slice(0, -1).map(m => ({ role: m.role, content: m.content }));
+const MAX_HISTORY = 30;
+const historySlice = session.messages.slice(Math.max(0, session.messages.length - 1 - MAX_HISTORY), -1);
+const history = historySlice.map(m => ({ role: m.role, content: m.content }));
 
 try {
 window.__amigoStreamCallback = (partial) => {
@@ -3065,18 +3081,32 @@ headers: {
 body: JSON.stringify({
 prompt: prompt,
 width: 512,
-height: 512
+height: 512,
+provider: State.settings.imageProvider || 'pollinations'
 }),
 signal: controller.signal
 });
 
 if (!response.ok) {
-const error = await response.json();
-throw new Error(error.error || 'Ошибка генерации');
+let errMsg = 'Ошибка генерации';
+try { const error = await response.json(); errMsg = error.error || errMsg; } catch {}
+throw new Error(errMsg);
 }
 
-const data = await response.json();
-const imageUrl = data.imageUrl;
+const contentType = response.headers.get('content-type');
+let imageUrl;
+let providerName = State.settings.imageProvider || 'pollinations';
+
+if (contentType && contentType.includes('application/json')) {
+    const data = await response.json();
+    imageUrl = data.imageUrl;
+    providerName = data.provider || 'pollinations.ai';
+} else {
+    // Zero-Copy Binary Proxy (Cloudflare AI)
+    const blob = await response.blob();
+    imageUrl = URL.createObjectURL(blob);
+    providerName = 'Cloudflare AI';
+}
 
 // Update message with image (XSS-safe)
 assistantMsg.content = `🎨 Вот твоя картинка: ${prompt}`;
@@ -3088,7 +3118,13 @@ const img = document.createElement('img');
 img.src = imageUrl;
 img.alt = prompt;
 img.className = 'message-image';
-img.onclick = () => window.open(imageUrl, '_blank');
+img.onclick = () => {
+    if (imageUrl.startsWith('blob:')) {
+        showToast('💾 Тапни и удерживай для сохранения в галерею', 'info');
+    } else {
+        window.open(imageUrl, '_blank');
+    }
+};
 imgContainer.appendChild(img);
 
 const meta = document.createElement('p');
@@ -3595,6 +3631,18 @@ bind('topPSlider', 'topPValue', 'topP');
 bind('maxTokensSlider', 'maxTokensValue', 'maxTokens', parseInt);
 bind('freqSlider', 'freqValue', 'frequencyPenalty');
 bind('presSlider', 'presValue', 'presencePenalty');
+
+// Image Provider Binding
+const imgProvSel = document.getElementById('imageProviderSelect');
+if (imgProvSel) {
+    imgProvSel.value = State.settings.imageProvider || 'pollinations';
+    imgProvSel.onchange = (e) => {
+        State.settings.imageProvider = e.target.value;
+        DB.saveSettings();
+        showToast('🎨 Провайдер: ' + e.target.options[e.target.selectedIndex].text, 'success');
+        haptic('light');
+    };
+}
 
 document.getElementById('modelSelect').onchange = (e) => {
 State.settings.model = e.target.value;
