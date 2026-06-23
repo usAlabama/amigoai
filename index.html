@@ -1873,7 +1873,7 @@ const DEFAULT_MODELS = [
     { id: 'openrouter:nvidia/nemotron-3-super-120b-a12b:free', name: 'NVIDIA Nemotron 3 Super · OR', provider: 'openrouter', free: true, speed: 'fast', reasoning: true },
     { id: 'openrouter:poolside/laguna-m.1:free', name: 'Poolside Laguna M.1 · OR', provider: 'openrouter', free: true, speed: 'fast', reasoning: false },
     { id: 'openrouter:meta-llama/llama-4-scout:free', name: 'Llama 4 Scout · OR', provider: 'openrouter', free: true, speed: 'fast', reasoning: false },
-
+    { id: 'openrouter:google/gemma-3-27b-it:free', name: 'Gemma 3 27B (Vision) · OR', provider: 'openrouter', free: true, speed: 'fast', reasoning: false },
 
     // 🛡️ OpenRouter Reliable Classics
     { id: 'openrouter:meta-llama/llama-3.3-70b-instruct:free', name: 'Llama 3.3 70B · OR', provider: 'openrouter', free: true, speed: 'fast', reasoning: false },
@@ -1901,6 +1901,7 @@ const PRESET_MODELS = [
     { id: 'groq:llama-3.3-70b-versatile', name: 'Llama 3.3 70B (Groq)', provider: 'groq', desc: '⚡ Максимальная скорость генерации для простых задач и чата', reasoning: false },
     { id: 'groq:deepseek-r1-distill-llama-70b', name: 'DeepSeek R1 70B (Groq)', provider: 'groq', desc: 'Reasoning-модель на стероидах скорости от Groq', reasoning: true },
     { id: 'cf:@cf/meta/llama-3.3-70b-instruct-fp8-fast', name: 'Llama 3.3 70B (Cloudflare)', provider: 'cf', desc: '🛡️ Стабильный бэкап через инфраструктуру Cloudflare', reasoning: false }
+    { id: 'openrouter:google/gemma-3-27b-it:free', name: 'Gemma 3 27B (Vision) · OR', provider: 'openrouter', desc: 'Надежная универсальная рабочая лошадка на каждый день', reasoning: false },
 ];
 
 const ASSISTANTS = [
@@ -3123,32 +3124,31 @@ if (contentType && contentType.includes('application/json')) {
     const data = await response.json();
     imageUrl = data.imageUrl;
     providerName = data.provider || 'pollinations.ai';
-} else {
-	// 🔥 Двойная обработка: Binary Proxy (v1.3.0) или JSON URL (v1.2.0 fallback)
-	const contentType = response.headers.get('content-type') || '';
-	
-	if (contentType.startsWith('image/')) {
-		// Worker v1.3.0: возвращает бинарный поток
-		const blob = await response.blob();
-		imageUrl = URL.createObjectURL(blob);
-		providerName = response.headers.get('X-Provider') || 'Binary Proxy';
-	} else {
-		// Worker v1.2.0 fallback: возвращает JSON с URL
-		// Пробуем распарсить как JSON, если не получится — используем как есть
-		try {
-			const text = await response.text();
-			const data = JSON.parse(text);
-			imageUrl = data.imageUrl || data.url;
-			providerName = data.provider || 'pollinations.ai';
-			
-			if (!imageUrl) {
-				throw new Error('No imageUrl in response');
-			}
-		} catch {
-			throw new Error('Invalid response format from Worker');
-		}
-	}
-}
+    } else {
+        // 🔥 Двойная обработка: Binary Proxy (v1.3.1) или JSON URL (v1.2.0 fallback)
+        const contentType = response.headers.get('content-type') || '';
+        
+        if (contentType.startsWith('image/')) {
+            // Worker v1.3.1: возвращает бинарный поток
+            const blob = await response.blob();
+            imageUrl = URL.createObjectURL(blob);
+            providerName = response.headers.get('X-Provider') || 'Binary Proxy';
+        } else {
+            // Worker v1.2.0 fallback: возвращает JSON с URL
+            try {
+                const text = await response.text();
+                const data = JSON.parse(text);
+                imageUrl = data.imageUrl || data.url;
+                providerName = data.provider || 'pollinations.ai';
+                
+                if (!imageUrl) {
+                    throw new Error('No imageUrl in response');
+                }
+            } catch {
+                throw new Error('Invalid response format from Worker');
+            }
+        }
+    }
 
 // Update message with image (XSS-safe)
 assistantMsg.content = `🎨 Вот твоя картинка: ${prompt}`;
