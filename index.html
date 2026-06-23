@@ -1571,6 +1571,20 @@ to { transform: rotate(360deg); }
 <div class="drawer-section">
 <label>🎨 Провайдер картинок</label>
 <select class="select-input" id="imageProviderSelect">
+<option value="pollinations">Pollinations.ai (Безлимит) 🌐</option>
+</select>
+</div>
+<div class="drawer-section">
+<label>🎨 Модель генерации</label>
+<select class="select-input" id="imageModelSelect">
+<option value="flux">Flux (Высокое качество) ✨</option>
+<option value="turbo">Turbo (Быстрая генерация) ⚡</option>
+</select>
+</div>
+
+<div class="drawer-section">
+<label>🎨 Провайдер картинок</label>
+<select class="select-input" id="imageProviderSelect">
 <option value="pollinations">Pollinations.ai (Flux/Turbo) 🌐</option>
 <option value="cf-sdxl">Cloudflare SDXL (Качество) ☁️</option>
 <option value="cf-flux">Cloudflare Flux (Скорость) ⚡</option>
@@ -3042,10 +3056,12 @@ if (!session) return;
 // Add user message to chat
 const userMsg = { id: 'msg_' + uid(), role: 'user', content: `🎨 Сгенерируй: ${prompt}`, ts: Date.now() };
 session.messages.push(userMsg);
+const userMsgId = userMsg.id; // 🔥 Для очистки при ошибке
 
 // Add loading placeholder
 const assistantMsg = { id: 'msg_' + uid(), role: 'assistant', content: '', ts: Date.now() };
 session.messages.push(assistantMsg);
+const assistantMsgId = assistantMsg.id; // 🔥 Для очистки при ошибке
 
 renderThread();
 renderHistory();
@@ -3082,7 +3098,8 @@ body: JSON.stringify({
 prompt: prompt,
 width: 512,
 height: 512,
-provider: State.settings.imageProvider || 'pollinations'
+provider: State.settings.imageProvider || 'pollinations',
+model: State.settings.imageModel || 'flux'
 }),
 signal: controller.signal
 });
@@ -3146,11 +3163,13 @@ haptic('success');
 
 } catch (error) {
 console.error('Image generation error:', error);
-assistantMsg.content = `❌ Ошибка: ${error.message}`;
-if (msgBody) {
-msgBody.innerHTML = renderMarkdown(assistantMsg.content);
-}
-showToast(error.message || t('errorOccurred'), 'danger');
+// 🔥 КРИТИЧНО: Удаляем мусорные сообщения из истории, чтобы AI не отвечал на них математическими описаниями
+session.messages = session.messages.filter(m => m.id !== userMsgId && m.id !== assistantMsgId);
+renderThread();
+renderHistory();
+await persistSession(session);
+
+showToast('🎨 ' + (error.message || t('errorOccurred')), 'danger');
 haptic('error');
 } finally {
 State.busy = false;
@@ -3631,6 +3650,26 @@ bind('topPSlider', 'topPValue', 'topP');
 bind('maxTokensSlider', 'maxTokensValue', 'maxTokens', parseInt);
 bind('freqSlider', 'freqValue', 'frequencyPenalty');
 bind('presSlider', 'presValue', 'presencePenalty');
+
+// Image Provider & Model Bindings
+const imgProvSel = document.getElementById('imageProviderSelect');
+if (imgProvSel) {
+    imgProvSel.value = State.settings.imageProvider || 'pollinations';
+    imgProvSel.onchange = (e) => {
+        State.settings.imageProvider = e.target.value;
+        DB.saveSettings();
+        showToast('🎨 Провайдер: ' + e.target.options[e.target.selectedIndex].text, 'success');
+    };
+}
+const imgModelSel = document.getElementById('imageModelSelect');
+if (imgModelSel) {
+    imgModelSel.value = State.settings.imageModel || 'flux';
+    imgModelSel.onchange = (e) => {
+        State.settings.imageModel = e.target.value;
+        DB.saveSettings();
+        showToast('🎨 Модель: ' + e.target.options[e.target.selectedIndex].text, 'success');
+    };
+}
 
 // Image Provider Binding
 const imgProvSel = document.getElementById('imageProviderSelect');
